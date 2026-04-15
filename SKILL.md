@@ -110,6 +110,12 @@ grep -q "| $SESSION_ID |" "$MANIFEST_PATH"
 
    ---
 
+   ## 摘要
+
+   {summary}
+
+   ---
+
    ## 会话内容
 
    {formatted conversation}
@@ -125,13 +131,13 @@ grep -q "| $SESSION_ID |" "$MANIFEST_PATH"
    ```markdown
    # 会话存档清单
 
-   | 会话ID | 存档时间 | 标题/摘要 | 文件路径 |
-   |--------|----------|-----------|----------|
+   | 会话ID | 存档时间 | 标题 | 摘要 | 文件路径 |
+   |--------|----------|------|------|----------|
    ```
 
 3. 追加新行。使用打包的脚本进行安全追加：
    ```bash
-   bash /path/to/scripts/update_manifest.sh "$SESSION_ID" "$TIMESTAMP" "$TITLE" "$REL_PATH"
+   bash /path/to/scripts/update_manifest.sh "$SESSION_ID" "$TIMESTAMP" "$TITLE" "$SUMMARY" "$REL_PATH"
    ```
 
 ### 阶段 8：更新状态并确认
@@ -156,7 +162,7 @@ grep -q "| $SESSION_ID |" "$MANIFEST_PATH"
 1. 使用相同的阶段 1-4，但以不同方式识别"上一个会话"：
    - 列出最近会话
    - 找到最近的一个不是当前正在运行的会话
-2. 询问用户标题/摘要（手动触发时跳过自动生成）
+2. 询问用户标题和摘要（手动触发时跳过自动生成）
 3. 继续执行阶段 6-8
 
 ## 错误处理
