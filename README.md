@@ -1,95 +1,95 @@
-# OpenClaw Session Archiver
+# OpenClaw 会话存档工具
 
-Intelligent session archiving for OpenClaw. Automatically detects when a new session is created (via daily 4am split or inactivity timeout) and prompts to archive the previous session. Also supports manual triggers.
+OpenClaw 的智能会话存档工具。自动检测新会话创建（通过每日 4am 分割或不活动超时）并提示存档上一个会话。同时也支持手动触发。
 
-## Features
+## 功能特点
 
-- **Auto-detection**: Prompts to archive when OpenClaw creates a new session (4am daily or after inactivity)
-- **Manual triggers**: Archive on demand with natural language commands
-- **Smart deduplication**: Never archives the same session twice
-- **Auto-summary**: Generates 200-char summary from content if no title provided
-- **Markdown format**: Clean, readable archive files with full conversation history
-- **Manifest index**: Maintains `MANIFEST.md` with table of all archived sessions
-- **Customizable path**: Override archive location via environment variable
+- **自动检测**：当 OpenClaw 创建新会话时提示存档（4am 每日或不活动后）
+- **手动触发**：通过自然语言命令按需存档
+- **智能去重**：永不重复存档同一会话
+- **自动摘要**：如果未提供标题，自动从内容生成 200+ 字摘要
+- **Markdown 格式**：整洁、可读的存档文件，包含完整对话历史
+- **清单索引**：维护 `MANIFEST.md`，包含所有存档会话的表格
+- **自定义路径**：通过环境变量覆盖存档位置
 
-## Installation
+## 安装
 
-### Method 1: Clone directly (recommended)
+### 方法 1：直接克隆（推荐）
 
 ```bash
 git clone https://github.com/raychiu0202/openclaw-session-archiver.git ~/.openclaw/skills/session-archiver
 ```
 
-### Method 2: Via ClawHub (when published)
+### 方法 2：通过 ClawHub（已发布时）
 
 ```bash
 clawhub install session-archiver
 ```
 
-Or via SkillAtlas (if available):
+或通过 SkillAtlas（如果可用）：
 
 ```bash
 skill-atlas install session-archiver -y
 ```
 
-**Note:** Restart OpenClaw after installation for the skill to take effect.
+**注意：**安装后重启 OpenClaw 以使 skill 生效。
 
-## Usage
+## 使用方法
 
-### Manual Triggers
+### 手动触发
 
-Simply say any of the following in your chat:
+只需在聊天中说以下任意内容：
 
-- English: "archive session", "save conversation", "export chat"
-- Chinese: "保存会话", "存档", "归档", "生成会话清单"
+- 英文："archive session", "save conversation", "export chat"
+- 中文："保存会话", "存档", "归档", "生成会话清单"
 
-The skill will:
-1. Identify the previous session
-2. Ask for a title/summary (optional, reply "跳过" to auto-generate)
-3. Archive the conversation to markdown
-4. Update the manifest
+该工具将：
+1. 识别上一个会话
+2. 询问标题/摘要（可选，回复"跳过"自动生成）
+3. 将对话存档为 markdown
+4. 更新清单
 
-### Auto-Trigger (when session splits)
+### 自动触发（当会话分割时）
 
-When OpenClaw creates a new session (automatically at 4am or after inactivity), the skill detects this and prompts:
+当 OpenClaw 创建新会话时（4am 自动或不活动后），该工具检测到并提示：
 
 > 上一个会话 ([start] 至 [end]) 已结束，需要存档吗？
 
-Reply with:
-- "是" / "yes" → archive with auto-summary
-- Provide a title → archive with custom title
-- "不" / "no" → skip (not persistently remembered in v1)
+回复：
+- "是" / "yes" → 使用自动摘要存档
+- 提供标题 → 使用自定义标题存档
+- "不" / "no" → 跳过（v1 中不持久记住）
 
-## Configuration
+## 配置
 
-### Custom Archive Location
+### 自定义存档位置
 
-Set the `SESSION_ARCHIVER_ROOT` environment variable to change where archives are stored:
+设置 `SESSION_ARCHIVER_ROOT` 环境变量以更改存档存储位置：
 
 ```bash
-# In your shell profile (~/.zshrc or ~/.bashrc)
+# 在你的 shell 配置文件中（~/.zshrc 或 ~/.bashrc）
 export SESSION_ARCHIVER_ROOT="~/custom/path/to/archives"
 ```
 
-Default: `~/Documents/my_ai_archive/`
+默认：`~/Documents/my_ai_archive/`
 
-### Directory Structure
+### 目录结构
 
 ```
 ~/Documents/my_ai_archive/
-├── MANIFEST.md                 # Index table of all sessions
+├── MANIFEST.md                 # 所有会话的索引表
 └── conversations/
     ├── 2026-04-15_15-21-03_session.md
     ├── 2026-04-15_16-00-45_session.md
     └── ...
 ```
 
-## Archive Format
+## 存档格式
 
-Each archive file is a markdown document:
+每个存档文件是一个 markdown 文档：
 
 ```markdown
-# Session Title
+# 会话标题
 
 - **会话 ID**: agent:main:abc123
 - **存档时间**: 2026-04-15_15-21-03
@@ -100,94 +100,94 @@ Each archive file is a markdown document:
 ## 会话内容
 
 ### user
-Hello, can you help me with...
+你好，能帮我...
 
 ### assistant
-Of course! Here's how...
+当然！这里是...
 
 ---
-*Archived by session-archiver skill*
+*由 session-archiver skill 存档*
 ```
 
-## FAQ
+## 常见问题
 
-### Q: How does it avoid duplicate archives?
+### Q: 如何避免重复存档？
 
-A: Before archiving, the skill checks `MANIFEST.md` for the session ID. If found, it skips the operation and notifies you.
+A: 存档前，该工具检查 `MANIFEST.md` 中的会话 ID。如果找到，它跳过操作并通知你。
 
-### Q: Can I mark a session as "don't archive"?
+### Q: 我可以标记会话为"不存档"吗？
 
-A: In v1, this is not persistent. When prompted, simply reply "no" to skip that specific instance. Future versions may support persistent ignore lists.
+A: 在 v1 中，这不是持久的。被提示时，只需回复"no"跳过该特定实例。未来版本可能支持持久忽略列表。
 
-### Q: What if I manually trigger but there's no previous session?
+### Q: 如果我手动触发但没有上一个会话怎么办？
 
-A: You'll see: "没有可存档的上一个会话。" (No previous session to archive.)
+A: 你会看到："没有可存档的上一个会话。"
 
-### Q: How long are archives kept?
+### Q: 存档保留多久？
 
-A: Archives are stored indefinitely on your local filesystem. You can manually delete old files from `~/Documents/my_ai_archive/`.
+A: 存档无限期存储在本地文件系统上。你可以从 `~/Documents/my_ai_archive/` 手动删除旧文件。
 
-### Q: Can I edit archive files?
+### Q: 我可以编辑存档文件吗？
 
-A: Yes! Archive files are plain markdown. Edit them directly or use the manifest to locate specific sessions.
+A: 可以！存档文件是纯 markdown。直接编辑它们或使用清单定位特定会话。
 
-### Q: Does this work with all OpenClaw channels?
+### Q: 这适用于所有 OpenClaw 频道吗？
 
-A: Yes, the skill archives the conversation content regardless of channel (webchat, Discord, Telegram, etc.).
+A: 是的，无论频道（webchat、Discord、Telegram 等），该工具都存档对话内容。
 
-## Troubleshooting
+## 故障排除
 
-### Skill not triggering after installation
+### 安装后 skill 不触发
 
-Restart OpenClaw:
+重启 OpenClaw：
 ```bash
 openclaw gateway restart
 ```
 
-### Permission errors
+### 权限错误
 
-Ensure the archive directory is writable:
+确保存档目录可写：
 ```bash
 mkdir -p ~/Documents/my_ai_archive/conversations
 chmod 755 ~/Documents/my_ai_archive
 ```
 
-### MANIFEST.md corrupted
+### MANIFEST.md 损坏
 
-Delete it and the skill will regenerate the header on next archive:
+删除它，skill 将在下次存档时重新生成表头：
 ```bash
 rm ~/Documents/my_ai_archive/MANIFEST.md
 ```
 
-## Development
+## 开发
 
-### File Structure
+### 文件结构
 
 ```
 openclaw-session-archiver/
-├── SKILL.md              # Core skill logic (this is what OpenClaw reads)
-├── README.md             # This file
-├── README.zh-CN.md       # Chinese documentation
-├── LICENSE               # MIT License
+├── SKILL.md              # 核心 skill 逻辑（这是 OpenClaw 读取的内容）
+├── README.md             # 本文件
+├── README.zh-CN.md       # 中文文档
+├── LICENSE               # MIT 许可证
 ├── scripts/
-│   └── update_manifest.sh # Helper script for safe manifest updates
-└── assets/               # Optional screenshots (for docs)
+│   └── update_manifest.sh # 用于安全清单更新的辅助脚本
+└── assets/               # 可选截图（用于文档）
 ```
 
-### How the auto-detection works
+### 自动检测如何工作
 
-OpenClaw automatically splits sessions daily at 4am or after long inactivity. When a new session starts, this skill (when triggered) lists recent sessions and identifies the immediately preceding one, then prompts for archiving.
+OpenClaw 每日 4am 或长时间不活动后自动分割会话。当新会话开始时，此 skill（被触发时）列出最近会话并识别紧接着的前一个，然后提示存档。
 
-**Note:** In v1, auto-detection requires manual triggering. True automatic prompting on session split is planned for v2.
+**注意：**在 v1 中，自动检测需要手动触发。真正在会话分割时的自动提示计划在 v2 中实现。
 
-## License
+## 许可证
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT 许可证 - 详见 [LICENSE](LICENSE)。
 
-## Contributing
+## 贡献
 
-Issues and pull requests welcome! This is an open-source project maintained by the community.
+欢迎提出问题和拉取请求！这是一个由社区维护的开源项目。
 
-## Credits
+## 致谢
 
-Built for [OpenClaw](https://github.com/openclaw/openclaw) - the extensible AI agent framework.
+为 [OpenClaw](https://github.com/openclaw/openclaw) 构建 - 可扩展的 AI 代理框架。
