@@ -1,6 +1,6 @@
 ---
 name: session-archiver
-description: Auto-detect when OpenClaw creates a new session (via auto-split at 4am or after inactivity) and prompt to archive the previous session. Also supports manual triggers: "保存会话", "存档", "归档", "archive session", "save conversation". Archives to ~/Documents/my_ai_archive/conversations/ with a MANIFEST.md index table. Auto-generates 200-char summary from content if no title provided. Prevents duplicates by checking MANIFEST.md for existing session IDs.
+description: Auto-detect when OpenClaw creates a new session (via auto-split at 4am or after inactivity) and prompt to archive the previous session. Also supports manual triggers: "保存会话", "存档", "归档", "archive session", "save conversation". Archives to ~/Documents/my_ai_archive/conversations/ with a MANIFEST.md index table. Auto-generates Chinese summary title (concise) and detailed summary (200+ words) from content if not provided. Prevents duplicates by checking MANIFEST.md for existing session IDs.
 ---
 
 # Session Archiver
@@ -52,11 +52,13 @@ If found, reply: "该会话已存档，跳过。"
 
 ### Phase 3: Ask for Title/Summary (If Not Already Provided)
 
-Reply: "想给这次会话加个标题或摘要吗？（可以直接说，或回复「跳过」来自动生成摘要）"
+Reply: "想给这次会话加个标题或摘要吗？（可以直接说，或回复「跳过」来自动生成标题和摘要）"
 
 Wait for user input:
-- If they provide a title → use it
-- If they skip/reply "跳过" → extract first 200 characters from conversation content as summary
+- If they provide a title → use it (user-provided title)
+- If they skip/reply "跳过" → automatically generate:
+  1. **标题**: Concise Chinese summary (10-30 chars) that captures the main topic
+  2. **摘要**: Detailed Chinese summary (200+ words) that covers the conversation's key points
 - If they reply "不存档" or similar → mark as ignored (no need to implement persistent ignore state in v1)
 
 ### Phase 4: Gather Session Data
@@ -146,8 +148,28 @@ Or in English (auto-detect user language):
 
 ## Auto-Summary Generation
 
-When user skips title, extract summary from first user or assistant message text:
-1. Concatenate first 2-3 message contents
-2. Take first 200 characters
-3. Truncate at word boundary if needed
-4. Append "..." if truncated
+When user skips, generate BOTH title and summary from conversation content:
+
+### 生成标题 (Title)
+1. Read the full conversation history
+2. Identify the main topic, task, or purpose
+3. Generate a concise Chinese title (10-30 characters)
+4. Focus on: what was discussed, what was built, what problem was solved
+5. Examples: "开发会话存档Skill", "优化数据库查询性能", "设计用户认证流程"
+
+### 生成摘要 (Summary)
+1. Read the full conversation history (all user and assistant messages)
+2. Extract key information:
+   - What was the user's goal/request?
+   - What solutions/approaches were discussed?
+   - What was the final outcome or decision?
+   - Any important technical details or decisions
+3. Write a detailed Chinese summary in narrative form (200+ words)
+4. Structure: 背景需求 → 讨论过程 → 最终结论
+5. If conversation is too short (less than 200 words possible), include all content naturally
+
+### Example Output
+
+**标题**: "OpenClaw 会话存档 Skill 开发"
+
+**摘要**: "用户请求开发一个 OpenClaw Skill，实现会话自动存档功能。讨论了触发方式（自动检测会话切分+手动触发）、存档格式（Markdown）、清单维护（MANIFEST.md 表格）等技术细节。最终实现了包含 SKILL.md、辅助脚本和中英文 README 的完整项目，已发布到 GitHub 并安装到本地环境。测试验证了存档文件生成、清单更新和去重功能均正常工作。"
